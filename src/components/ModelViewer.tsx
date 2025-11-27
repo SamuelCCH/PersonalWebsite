@@ -4,8 +4,9 @@
 import { Suspense, useRef, useLayoutEffect, useEffect, useMemo } from 'react';
 import { Canvas, useFrame, useLoader, useThree, invalidate } from '@react-three/fiber';
 import { OrbitControls, useGLTF, useFBX, useProgress, Html, Environment, ContactShadows } from '@react-three/drei';
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
+
 import * as THREE from 'three';
+import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 
 const isTouch = typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
 const deg2rad = (d: number) => (d * Math.PI) / 180;
@@ -32,7 +33,7 @@ const Loader = ({ placeholderSrc }: { placeholderSrc?: string }) => {
 };
 
 const DesktopControls = ({ pivot, min, max, zoomEnabled }: { pivot: THREE.Vector3, min: number, max: number, zoomEnabled: boolean }) => {
-  const ref = useRef<OrbitControls>(null);
+  const ref = useRef<OrbitControlsImpl>(null);
   useFrame(() => ref.current?.target.copy(pivot));
   return (
     <OrbitControls
@@ -100,7 +101,6 @@ const ModelInner = ({
   const content = useMemo(() => {
     if (ext === 'glb' || ext === 'gltf') return useGLTF(url).scene.clone();
     if (ext === 'fbx') return useFBX(url).clone();
-    if (ext === 'obj') return useLoader(OBJLoader, url).clone();
     console.error('Unsupported format:', ext);
     return null;
   }, [url, ext]);
